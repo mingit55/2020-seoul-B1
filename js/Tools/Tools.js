@@ -36,6 +36,8 @@ class Tools {
             // 가장 위로 올리기
             this.parts.splice(idx, 1);
             this.parts.unshift(this.selected);
+        } else {
+            this.selected = null;
         }
         
         this.parts.reverse();

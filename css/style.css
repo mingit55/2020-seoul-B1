@@ -478,7 +478,7 @@ label#con-play {
 }
 
 .context-menu {
-    position: fixed;
+    position: absolute;
     width: 250px;
     background-color: #fff;
     border: 1px solid #ddd;

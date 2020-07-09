@@ -4,7 +4,7 @@ class App {
     }
     async init(){
         this.selectedTool;
-        this.workspace = new Workspace();
+        this.workspace = new Workspace(this);
         this.tools = {
             select: new Select(this),
             spin: new Spin(this),
@@ -41,7 +41,6 @@ class App {
         menus.forEach(({name, onclick}) => {
             let $menu = $(`<div class="menu-item">${name}</div>`)
             $menu.on("click", onclick);
-            $menu.on("click", () => $menuBox.remove());
             $menuBox.append($menu);
         });
 
@@ -83,6 +82,11 @@ class App {
 
         // 드래그 방지
         $(this.workspace.canvas).on("dragstart", e => e.preventDefault());
+
+        // 콘텍스트 메뉴 사라지기
+        $(window).on("click", e => {
+            $(".context-menu").remove();
+        });
 
 
         /**

@@ -9,12 +9,15 @@ class Select extends Tools {
     onmousedown(e){
         this.activateClicked(e); // 클릭한 위치의 파츠를 활성화 시킴
 
-        // 각 좌표를 저장
-        let [X, Y] = this.getXY(e);
-        this.fx = this.selected.x + X;
-        this.fy = this.selected.y + Y;
-        this.selected.bx = this.selected.x;
-        this.selected.by = this.selected.y;
+        if(this.selected){
+            // 각 좌표를 저장
+            let [X, Y] = this.getXY(e);
+            this.fx = this.selected.x + X;
+            this.fy = this.selected.y + Y;
+            this.selected.bx = this.selected.x;
+            this.selected.by = this.selected.y;
+        }
+
     }
     onmousemove(e){
         if(!this.selected || !this.fx || !this.fy || e.which !== 1) return;

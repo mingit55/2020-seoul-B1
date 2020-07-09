@@ -1,5 +1,7 @@
 class Workspace {
-    constructor(){
+    constructor(app){
+        this.app = app;
+
         // 출력용 캔버스
         this.canvas = $("#workspace")[0];
         this.ctx = this.canvas.getContext("2d");
@@ -17,6 +19,14 @@ class Workspace {
         this.borderWidth = 1;
     }
     
+    // 클릭한 좌표가 Workspace 내인지
+    isContains({pageX, pageY}){  
+        let {left, top} = $(this.canvas).offset();
+        let width = $(this.canvas).width();
+        let height = $(this.canvas).height();
+        
+        return left <= pageX && pageX <= left + width && top <= pageY && pageY <= top + height;
+    }
 
     // 파츠 추가
     pushPart(part){
@@ -44,7 +54,9 @@ class Workspace {
             this.ctx.drawImage(part.canvas, part.x, part.y);
         });
 
-        // 3. 자르기 스크린을 출력한다.
-        this.ctx.drawImage(this.curveCanvas, 0, 0);
+        // 3. (현재 도구가 자르기라면) 자르기 스크린을 출력한다.
+        if(this.app.selectedTool == "cut") {
+            this.ctx.drawImage(this.curveCanvas, 0, 0);
+        }
     }
 }

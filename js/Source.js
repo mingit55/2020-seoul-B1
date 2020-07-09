@@ -30,9 +30,10 @@ class Source {
     }
 
     // 해당 데이터 내의 픽셀 색상을 가져온다.
-    getColor(x, y, data = this.imageData.data){
-        const {width, height} = this;
+    getColor(x, y, {data, width, height} = this.imageData){
         let r, g, b, a;
+
+        // X, Y가 범위에서 벗어나면 False
         if(x >= 0 && y >= 0 && x < width && y < height) {
             r = data[x * 4 + y * width * 4];
             g = data[x * 4 + y * width * 4 + 1];
@@ -54,13 +55,22 @@ class Source {
     }
 
     // 해당 좌표가 외곽에 위치하는지 검사한다.
-    isOuterPixel(x, y, data = this.imageData.data){
-        let getColor = (x, y) => this.getColor(x, y, data);
-        let leftColor = getColor(x - 1, y);
-        let rightColor = getColor(x + 1, y);
-        let topColor = getColor(x, y - 1);
-        let bottomColor = getColor(x, y + 1);
+    isOuterPixel(x, y){
+        let leftColor = this.getColor(x - 1, y);
+        let rightColor = this.getColor(x + 1, y);
+        let topColor = this.getColor(x, y - 1);
+        let bottomColor = this.getColor(x, y + 1);
         
         return !leftColor || !rightColor || !topColor || !bottomColor;
+    }
+
+    // 해당 좌표가 테두리인지 검사한다
+    isBorderPixel(x, y){
+        let leftColor = this.getColor(x - 1, y);
+        let rightColor = this.getColor(x + 1, y);
+        let topColor = this.getColor(x, y - 1);
+        let bottomColor = this.getColor(x, y + 1);
+        
+        return leftColor || rightColor || topColor || bottomColor;
     }
 }

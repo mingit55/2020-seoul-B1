@@ -1,11 +1,16 @@
 class Part {
     constructor(source){
         this.src = this.getSource(source);
+
         this.canvas = document.createElement("canvas");
         this.canvas.width = this.src.width;
         this.canvas.height = this.src.height;
 
+        // 잘린 선의 좌표
+        this.sliceLine = [];
+
         this.ctx = this.canvas.getContext("2d");
+        this.ctx.fillStyle = "#000";
 
         this.x = 0;
         this.y = 0;
@@ -16,11 +21,19 @@ class Part {
     
     update(){
         this.ctx.clearRect(0, 0, this.width, this.height);
+
+        // 파츠의 이미지
         this.ctx.putImageData(this.src.imageData, 0, 0);
 
+        // 파츠의 테두리
         if(this.active){
             this.ctx.putImageData(this.src.borderData, 0, 0);
         }
+
+        //파츠의 잘린 선
+        this.sliceLine.forEach(([x, y]) => {
+            this.ctx.fillRect(x, y, 1, 1);
+        });
     }
 
     getSource({image = null, imageData = null}){
