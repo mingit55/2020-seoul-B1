@@ -214,6 +214,7 @@ class Cut extends Tools {
     clear = e => {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.vtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.selected.active = false;
         this.selected = null;
         this.workspace.render();
     }

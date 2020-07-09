@@ -96,8 +96,15 @@ class App {
             let role = e.currentTarget.dataset.role;
 
             $("#tool-bar .tool.active").removeClass("active");
+            if(this.currentTool) {
+                this.currentTool.selected = null;
+                
+                // 만약 도구가 회전이였다면 초기화
+                this.selectedTool === "spin" && this.currentTool.spinInit();
+            }
+
             if(role === this.selectedTool){
-               this.selectedTool = null; 
+                this.selectedTool = null; 
             } else {
                 this.selectedTool = role;
                 $(e.currentTarget).addClass("active");

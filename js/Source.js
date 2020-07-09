@@ -73,4 +73,26 @@ class Source {
         
         return leftColor || rightColor || topColor || bottomColor;
     }
+
+    // 빈 공간을 제외시키고 재계산
+    getSize(){
+        let top = [this.height - 1, this.height - 1];
+        let bottom = [0, 0];
+        let left = [this.width - 1, this.width - 1];
+        let right = [0, 0];
+        for(let y = 0; y < this.height; y++){
+            for(let x = 0; x < this.width; x++){
+                if(this.getColor(x, y)){
+                    if(top[1] >= y) top = [x, y];
+                    if(left[0] >= x) left = [x, y];
+                    if(y >= bottom[1]) bottom = [x, y];
+                    if(x >= right[0]) right = [x, y];
+                }
+            }
+        }
+        let width = right[0] - left[0];
+        let height = bottom[1] - top[1];
+
+        return [width, height];
+    }
 }
