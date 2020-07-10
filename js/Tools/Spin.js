@@ -1,28 +1,21 @@
 class Spin extends Tools {
     constructor(){
         super(...arguments);
-        
+
+        this.prevSelected = null;
         this.spinning = false;
     }
     ondblclick(e){
-        let prevSelected = this.selected;
+        if(this.selected) return;
         this.activateClicked(e);
-
-        // 이전 파트는 원상태로 복구
-        console.log(prevSelected)
-        if(prevSelected && this.selected !== prevSelected){
-            prevSelected.rotateInit();
-            prevSelected.rotate(-prevSelected.prevAngle);
-            prevSelected.prevAngle = 0;
-        }
+        this.selected.beforeRotate();
     }
     onmousedown(e){
-        let [X, Y] = this.getXY(e);
-        if(!this.selected || !this.selected.isClicked(X, Y)) return;
-
+        if(!this.selected) return;
+        
+        let [X] = this.getXY(e);
         this.bx = X;
         this.spinning = true;
-        this.selected.rotateInit();
     }
     onmousemove(e){
         if(!this.selected || !this.spinning) return;
@@ -32,15 +25,13 @@ class Spin extends Tools {
         let movePixel = this.bx - X; 
         this.bx = X;
         
-        let moveAngle = (Math.PI/180) * movePixel;
-        this.selected.prevAngle += moveAngle;
-        this.selected.rotate(moveAngle);
+        let angle = (Math.PI/180) * movePixel;
+        this.selected.prevAngle += angle;
+        this.selected.rotate(angle);
         this.workspace.render();
-
-        console.log(this.selected.prevAngle * 180 / Math.PI);
     }
     onmouseup(e){
-        this.spinning = false;       
+        this.spinning = false;     
     }
     oncontextmenu(e){
         e.preventDefault();
@@ -58,17 +49,13 @@ class Spin extends Tools {
     accept = e => {
         if(!this.selected) return;
         this.selected.active = false;
-        this.selected.prevAngle = 0;
         this.selected = null;
         this.workspace.render();
     }
 
     spinInit = e => {
         if(!this.selected) return;
-        this.selected.rotateInit();
-        console.log(-this.selected.prevAngle);
-        this.selected.rotate(-this.selected.prevAngle);
-        this.selected.prevAngle = 0;
+        this.selected.rotateReset();
         this.selected.active = false;
         this.selected = null;
         this.workspace.render();

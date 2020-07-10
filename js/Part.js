@@ -6,12 +6,9 @@ class Part {
         this.canvas.width = this.src.width;
         this.canvas.height = this.src.height;
 
-        // 잘린 선의 좌표
+        // 잘린 선
         this.sliceLine = [];
-
         
-        this.angle = 0;     // 회전 각도 누적
-        this.prevAngle = 0; // 이전 각도
 
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = "#000";
@@ -25,7 +22,9 @@ class Part {
     }
 
     // 회전 전 작업
-    rotateInit(){
+    beforeRotate(){
+        this.prevSrc = this.src;
+
         let [width, height] = this.src.getSize();
         let wantSize = Math.sqrt( Math.pow(width, 2) + Math.pow(height, 2) );
         if(this.canvas.width < wantSize && this.canvas.height < wantSize){
@@ -49,6 +48,7 @@ class Part {
         let ctx = this.copy.getContext("2d");
         ctx.putImageData(this.src.imageData, 0, 0);
         
+        // 담은 이미지를 가운데로 맞춰서 뿌림
         let x = this.angleX - this.copy.width / 2;
         let y = this.angleY - this.copy.height / 2;
         this.ctx.putImageData(this.src.imageData, x, y);
@@ -68,6 +68,15 @@ class Part {
 
         let source = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.src = this.getSource({imageData: source});
+    }
+
+    // 회전 초기화 
+    rotateReset(){
+        this.src = this.prevSrc;
+        this.x = this.x + (this.canvas.width - this.src.width) / 2;
+        this.y = this.y + (this.canvas.height - this.src.height) / 2;
+        this.canvas.width = this.src.width;
+        this.canvas.height = this.src.height;
     }
     
     // 이미지 업데이트

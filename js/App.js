@@ -97,10 +97,10 @@ class App {
 
             $("#tool-bar .tool.active").removeClass("active");
             if(this.currentTool) {
-                this.currentTool.selected = null;
-                
                 // 만약 도구가 회전이였다면 초기화
                 this.selectedTool === "spin" && this.currentTool.spinInit();
+                
+                this.currentTool.selected = null;
             }
 
             if(role === this.selectedTool){
