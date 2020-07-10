@@ -492,3 +492,8 @@ label#con-play {
 .context-menu .menu-item:not(:last-child) { border-bottom: 1px solid #ddd; }
 
 /* /출품신청 */
+
+
+/* 도움말 영역 */
+.advice-container { width: 1000px; margin: 0 auto; }
+/* /도움말 영역 */
