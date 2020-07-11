@@ -8,7 +8,7 @@ class Part {
 
         // 잘린 선
         this.sliceLine = [];
-        
+        this.prevLine = [];
 
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = "#000";
@@ -24,15 +24,19 @@ class Part {
     // 회전 전 작업
     beforeRotate(){
         this.prevSrc = this.src;
-
-        let [width, height] = this.src.getSize();
+        
+        let [,, width, height] = this.src.getSize();
         let wantSize = Math.sqrt( Math.pow(width, 2) + Math.pow(height, 2) );
         if(this.canvas.width < wantSize && this.canvas.height < wantSize){
             // 이미지의 가운데를 중점으로 최대 크기로 캔버스를 늘림
-            let max_size = Math.sqrt( Math.pow(this.src.width, 2) + Math.pow(this.src.height, 2) );
+            let max_size = Math.sqrt( Math.pow(width, 2) + Math.pow(height, 2) );
             this.canvas.width = this.canvas.height = max_size;
-            this.x = parseInt(this.x - (max_size - this.src.width) / 2);
-            this.y = parseInt(this.y - (max_size - this.src.height) / 2);
+            let moveX = (max_size - width) / 2;
+            let moveY = (max_size - height) / 2;
+            this.x = parseInt(this.x - moveX);
+            this.y = parseInt(this.y - moveY);
+            this.sliceLine = this.sliceLine.map(([x, y]) => ([x + moveX, y + moveY]))
+            this.prevLine = JSON.parse(JSON.stringify(this.sliceLine));
             this.ctx.clearRect(0, 0, max_size, max_size);
         }
         
@@ -68,13 +72,23 @@ class Part {
 
         let source = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.src = this.getSource({imageData: source});
+
+        this.sliceLine = this.prevLine.map(([x, y]) => {
+            let r = Math.sqrt(Math.pow(x - this.angleX, 2), + Math.pow(this.angleY - y, 2));
+            let slangle = Math.asin((this.angleY - y) / r);
+            let moveAngle = slangle + angle;
+            return [ this.angleX + Math.cos(moveAngle) * r, this.angleY + Math.sin(moveAngle) * r];
+        });
     }
 
     // 회전 초기화 
     rotateReset(){
         this.src = this.prevSrc;
-        this.x = this.x + (this.canvas.width - this.src.width) / 2;
-        this.y = this.y + (this.canvas.height - this.src.height) / 2;
+        let moveX = (this.canvas.width - this.src.width) / 2;
+        let moveY = (this.canvas.height - this.src.height) / 2;
+        this.x = parseInt(this.x + moveX);
+        this.y = parseInt(this.y + moveY);
+        this.sliceLine = this.prevLine.map(([x, y]) => ([x - moveX, y - moveY]));
         this.canvas.width = this.src.width;
         this.canvas.height = this.src.height;
     }
@@ -116,5 +130,54 @@ class Part {
     // 클릭 되었는지 확인
     isClicked(x, y){
         return this.src.getColor(x - this.x, y - this.y);
+    }
+
+    // 실제 사이즈로 맞춰서 imageData 재생성
+    recalculate(){
+        let [x, y, w, h] = this.src.getSize();
+        this.canvas.width = w;
+        this.canvas.height = h;
+        let arr = [];
+        arr.length = w * h * 4;
+        arr.fill(0);
+        let uint8 = Uint8ClampedArray.from(arr);
+        for(let i = x; i < x + w; i++){
+            for(let j = y; j < y + h; j++){
+                let color = this.src.getColor(i, j);
+                if(!color) continue;
+                let {r, g, b, a} = color;
+                let idx = (i-x) * 4 + (j-y) * 4 * w;
+                uint8[idx] = r;
+                uint8[idx+1] = g;
+                uint8[idx+2] = b;
+                uint8[idx+3] = a;
+            }
+        }
+        this.src.imageData = new ImageData(uint8, w, h);
+        this.src.borderData = this.src.getBorderData();
+
+        this.x += x;
+        this.y += y;
+        this.sliceLine = this.sliceLine.map(([px, py]) => ([px - x, py - y]));
+    }
+
+    // 이 파츠가 해당 파츠 주변에 근접해 있는지 검사
+    isNear(part){
+        let px, py; // 실제 픽셀 좌표
+        let tx, ty; // this 파츠의 이미지 좌표
+        let ax, ay; // argument 파츠의 이미지 좌표
+
+        for(px = this.x; px <= this.x + this.src.width; px++){
+            for(py = this.y; py <= this.y + this.src.height; py++){
+                tx = px - this.x;
+                ty = py - this.y;
+
+                ax = px - part.x;
+                ay = py - part.y;
+            
+                if(this.src.getColor(tx, ty) && part.src.getColor(ax, ay)) return true;
+            }
+        }
+        return false;
     }
 }

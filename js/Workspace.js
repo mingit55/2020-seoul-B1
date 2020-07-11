@@ -52,7 +52,7 @@ class Workspace {
         this.parts.forEach(part => {
             part.update();
             this.ctx.drawImage(part.canvas, part.x, part.y);
-            this.ctx.strokeRect(part.x, part.y, part.canvas.width, part.canvas.height);
+            // this.ctx.strokeRect(part.x, part.y, part.canvas.width, part.canvas.height); // 캔버스 테두리 출력
         });
 
         // 3. (현재 도구가 자르기라면) 자르기 스크린을 출력한다.

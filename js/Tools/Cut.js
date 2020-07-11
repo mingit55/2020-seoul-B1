@@ -194,9 +194,14 @@ class Cut extends Tools {
             });
             newPart.x = part.x;
             newPart.y = part.y;
+            
+            let [x, y] = newPart.src.getSize();
 
             // 잘린 부분은 테두리 선으로 표시
             newPart.sliceLine = [... part.sliceLine, ...sliceLine].filter(([x, y]) => newPart.src.isBorderPixel(x, y));
+
+            // 잘린 선의 위치를 재계산
+            newPart.recalculate();
 
             return newPart;
         });

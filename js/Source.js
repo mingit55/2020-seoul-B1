@@ -2,7 +2,7 @@ class Source {
     constructor(imageData){
         this.imageData = imageData;
         this.borderColor = [255, 64, 64];
-        this.borderData = this.getborderData();
+        this.borderData = this.getBorderData();
     }
     get width(){
         return this.imageData.width;
@@ -12,7 +12,7 @@ class Source {
     }
 
     // 테두리 ImageData 가져오기
-    getborderData(){
+    getBorderData(){
         let uint8 = Uint8ClampedArray.from(this.imageData.data);
         
         let setColor = (x, y) => this.setColor(x, y, this.borderColor, uint8);
@@ -40,7 +40,7 @@ class Source {
             b = data[x * 4 + y * width * 4 + 2];
             a = data[x * 4 + y * width * 4 + 3];
 
-            return !a ? false : {r, g, b, a};
+            return !r && !g && !b && !a ? false : {r, g, b, a};
         } else {
             return false;
         }
@@ -74,14 +74,14 @@ class Source {
         return leftColor || rightColor || topColor || bottomColor;
     }
 
-    // 빈 공간을 제외시키고 재계산
+    // 실제 사이즈 계산해서 가져오기
     getSize(){
         let top = [this.height - 1, this.height - 1];
         let bottom = [0, 0];
         let left = [this.width - 1, this.width - 1];
         let right = [0, 0];
-        for(let y = 0; y < this.height; y++){
-            for(let x = 0; x < this.width; x++){
+        for(let y = 0; y <= this.height; y++){
+            for(let x = 0; x <= this.width; x++){
                 if(this.getColor(x, y)){
                     if(top[1] >= y) top = [x, y];
                     if(left[0] >= x) left = [x, y];
@@ -90,9 +90,9 @@ class Source {
                 }
             }
         }
-        let width = right[0] - left[0];
-        let height = bottom[1] - top[1];
+        let width = right[0] - left[0] + 1;
+        let height = bottom[1] - top[1] + 1;
 
-        return [width, height];
+        return [left[0], top[1], width, height];
     }
 }
