@@ -135,6 +135,7 @@ class App {
             if(this.currentTool) {
                 // 만약 도구가 회전이였다면 초기화
                 this.selectedTool === "spin" && this.currentTool.spinInit();
+                this.selectedTool === "glue" && this.currentTool.glueInit();
                 
                 this.currentTool.selected = null;
             }
@@ -202,7 +203,6 @@ class App {
                 }
             }
         });
-
 
         /**
          * 삭제하기 버튼
