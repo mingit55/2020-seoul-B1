@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>전주한지문화축제</title>
+        <script src="./jquery-3.4.1.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="./bootstrap-4.3.1-dist/css/bootstrap.min.css"
+        />
+        <script src="./bootstrap-4.3.1-dist/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="./fontawesome/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="./css/style.css" />
+        <link rel="stylesheet" href="./css/hashModule.css" />
+        <script src="./js/HashModule.js"></script>
+        <script src="./js/IDB.js"></script>
+        <script src="./js/register.js"></script>
+    </head>
+    <body>
+        <!-- 헤더 영역 -->
+        <input type="checkbox" id="open-nav" hidden />
+        <div id="top" class="d-none d-lg-block bg-dark">
+            <div class="container">
+                <div class="text-right">
+                    <a href="#" class="mr-3">로그인</a>
+                    <a href="#" class="mr-3">회원가입</a>
+                </div>
+            </div>
+        </div>
+        <header>
+            <div
+                class="container d-flex align-items-center justify-content-between h-100"
+            >
+                <a href="#" class="logo">
+                    전주한지문화축제
+                </a>
+                <nav class="d-none d-lg-flex">
+                    <div class="nav-group">
+                        <a href="#">전주한지문화축제</a>
+                        <div class="sub-list">
+                            <a href="#">개요/연혁</a>
+                            <a href="#">찾아오시는길</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <a href="#">한지상품판매관</a>
+                        <div class="sub-list">
+                            <a href="#">한지업체</a>
+                            <a href="#">온라인스토어</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <a href="#">한지공예대전</a>
+                        <div class="sub-list">
+                            <a href="#">출품신청</a>
+                            <a href="#">참가작품</a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <a href="#">축제공지사항</a>
+                        <div class="sub-list">
+                            <a href="#">알려드립니다</a>
+                            <a href="#">1:1문의</a>
+                        </div>
+                    </div>
+                </nav>
+                <label for="open-nav" class="menu-icon d-lg-none">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+            </div>
+        </header>
+        <label for="open-nav" id="aside-background" class="d-lg-none"></label>
+        <aside class="d-lg-none">
+            <div class="nav-group">
+                <a href="#">전주한지문화축제</a>
+                <div class="sub-list">
+                    <a href="#">개요/연혁</a>
+                    <a href="#">찾아오시는길</a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <a href="#">한지상품판매관</a>
+                <div class="sub-list">
+                    <a href="#">한지업체</a>
+                    <a href="#">온라인스토어</a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <a href="#">한지공예대전</a>
+                <div class="sub-list">
+                    <a href="#">출품신청</a>
+                    <a href="#">참가작품</a>
+                </div>
+            </div>
+            <div class="nav-group">
+                <a href="#">축제공지사항</a>
+                <div class="sub-list">
+                    <a href="#">알려드립니다</a>
+                    <a href="#">1:1문의</a>
+                </div>
+            </div>
+        </aside>
+        <!-- /헤더 영역 -->
+
+        <div class="container py-5">
+            <form id="register_form">
+                <div class="form-group">
+                    <label for="register_email">이메일</label>
+                    <input type="email" id="register_email" class="form-control" name="email" required>
+                </div>
+                <small class="text text-danger" id="email_danger"></small>
+
+                <div class="form-group">
+                    <label for="register_password">비밀번호</label>
+                    <input type="password" id="register_password" class="form-control" name="password" required>
+                </div>
+                <small class="text text-danger" id="password_danger"></small>
+
+                <div class="form-group">
+                    <label for="register_password_check">비밀번호 확인</label>
+                    <input type="password" id="register_password_check" class="form-control" name="password_check" required>
+                </div>
+                <small class="text text-danger" id="password_check_danger"></small>
+
+                <div class="form-group">
+                    <label for="register_profile">프로필 사진</label>
+                    <div class="custom-file">
+                        <input type="file" id="register_profile" class="custom-file-input" name="profile" required>
+                        <label for="register_profile" class="custom-file-label"></label>
+                    </div>
+                </div>
+                <small class="text text-danger" id="profile_danger"></small>
+
+                <div class="form-group">
+                    <label for="register_name">이름</label>
+                    <input type="text" id="register_name" class="form-control" name="name" required>
+                </div>
+                <small class="text text-danger" id="name_danger"></small>
+
+                <div class="form-group">
+                    <label for="register_type">회원 유형</label>
+                    <select name="type" id="register_type" class="form-control">
+                        <option value="일반 회원">일반 회원</option>
+                        <option value="기업 회원">기업 회원</option>
+                    </select>
+                </div>
+                <input type="submit" id="register_submit" class="form-control" value="회원가입">
+            </form>
+        </div>
+
+        <!-- 푸터 영역 -->
+        <footer class="pt-3 bg-dark">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 text-center">
+                        <a href="#" class="logo text-white">전주한지문화축제</a>
+                    </div>
+                    <div class="col-lg-8 my-3 my-lg-0">
+                        <div class="row">
+                            <div
+                                class="col-lg-3 col-6 mb-4 mb-lg-0 d-flex flex-column"
+                            >
+                                <span class="mb-2 text-white"
+                                    >전주한지문화축제</span
+                                >
+                                <a href="#" class="text-white">개요/연혁</a>
+                                <a href="#" class="text-white">찾아오시는길</a>
+                            </div>
+                            <div
+                                class="col-lg-3 col-6 mb-4 mb-lg-0 d-flex flex-column"
+                            >
+                                <span class="mb-2 text-white"
+                                    >한지상품판매관</span
+                                >
+                                <a href="#" class="text-white">한지업체</a>
+                                <a href="#" class="text-white">온라인 스토어</a>
+                            </div>
+                            <div
+                                class="col-lg-3 col-6 mb-4 mb-lg-0 d-flex flex-column"
+                            >
+                                <span class="mb-2 text-white"
+                                    >한지공예대전</span
+                                >
+                                <a href="#" class="text-white">출품신청</a>
+                                <a href="#" class="text-white">참가작품</a>
+                            </div>
+                            <div
+                                class="col-lg-3 col-6 mb-4 mb-lg-0 d-flex flex-column"
+                            >
+                                <span class="mb-2 text-white"
+                                    >축제공지사항</span
+                                >
+                                <a href="#" class="text-white">알려드립니다</a>
+                                <a href="#" class="text-white">1:1문의</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="text-white text-center">
+                            <span class="p-2">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                            <span class="p-2">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                            <span class="p-2">
+                                <i class="fa fa-google-plus"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-12 text-center py-4">
+                        <small class="text-white">
+                            Copyright 2018 jhanji. All Right Reserved.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- /푸터 영역 -->
+    </body>
+</html>
