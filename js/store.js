@@ -362,6 +362,7 @@ class Store {
     // 모든 해시 데이터 추출
     getAllHashs() {
         let hash = [];
+        console.log(this.papers);
         this.papers.forEach(item => {
             item.hash_tags.forEach(tag => {
                 if (!hash.includes(tag)) {
