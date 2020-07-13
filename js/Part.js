@@ -15,6 +15,7 @@ class Part {
 
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = "#000";
+        this.angle = 0;
         
         this.x = 0;
         this.y = 0;
@@ -23,62 +24,71 @@ class Part {
 
         
         this.update();
+        document.body.append(this.sliceCanvas);
     }
 
     // 회전 전 작업
     beforeRotate(){
+        // 이미지 데이터 저장
         this.prevSrc = this.src;
+        this.prevImage = document.createElement("canvas"); // putImageData는 각도가 반영되지 않으므로, 캔버스로 바꿈
+        this.prevImage.width = this.canvas.width;
+        this.prevImage.height = this.canvas.height;
+        let ctx = this.prevImage.getContext("2d");
+        ctx.putImageData(this.src.imageData, 0, 0);
+
+        // 잘린 선 데이터 저장
+        this.prevSlice = document.createElement("canvas");
+        this.prevSlice.width = this.sliceCanvas.width;
+        this.prevSlice.height = this.sliceCanvas.height;
+        let sctx = this.prevSlice.getContext("2d");
+        sctx.drawImage(this.sliceCanvas, 0, 0);
         
         let [,, width, height] = this.src.getSize();
         let wantSize = Math.sqrt( Math.pow(width, 2) + Math.pow(height, 2) );
         if(this.canvas.width < wantSize && this.canvas.height < wantSize){
             // 이미지의 가운데를 중점으로 최대 크기로 캔버스를 늘림
-            let max_size = Math.sqrt( Math.pow(width, 2) + Math.pow(height, 2) );
-            this.canvas.width = this.canvas.height = max_size;
-            let moveX = (max_size - width) / 2;
-            let moveY = (max_size - height) / 2;
+            this.canvas.width = this.canvas.height = wantSize;
+            this.sliceCanvas.width = this.sliceCanvas.height = wantSize;
+            let moveX = (wantSize - width) / 2;
+            let moveY = (wantSize - height) / 2;
             this.x = parseInt(this.x - moveX);
             this.y = parseInt(this.y - moveY);
-            this.ctx.clearRect(0, 0, max_size, max_size);
-            // 잘린 선 캔버스도 같이 늘려줌
-            this.copy_slice = this.sctx.getImageData(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
-            this.sliceCanvas.width = this.sliceCanvas.height = max_size;
-            this.sctx.clearRect(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
-            this.sctx.putImageData(this.copy_slice, moveX, moveY);
+            this.ctx.clearRect(0, 0, wantSize, wantSize);
         }
         
-
         // 캔버스의 중점
         this.angleX = this.angleY = this.canvas.width / 2;
-        
-
-        // 이미지의 복사본
-        this.copy = document.createElement("canvas");
-        this.copy.width = this.src.width;
-        this.copy.height = this.src.height;
-        let ctx = this.copy.getContext("2d");
-        ctx.putImageData(this.src.imageData, 0, 0);
-        
-        // 담은 이미지를 가운데로 맞춰서 뿌림
-        let x = this.angleX - this.copy.width / 2;
-        let y = this.angleY - this.copy.height / 2;
-        this.ctx.putImageData(this.src.imageData, x, y);
     }
 
     // 회전
     rotate(angle){
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.angle += angle;
+
+        let copy = document.createElement("canvas");
+        copy.width = this.canvas.width;
+        copy.height = this.canvas.height;
+        
+        let ctx = copy.getContext("2d");
+
+        ctx.translate(this.angleX, this.angleY);
+        ctx.rotate(this.angle);
+        ctx.translate(-this.angleX, -this.angleY);
+        
+        let x = this.angleX - this.prevSrc.width / 2;
+        let y = this.angleY - this.prevSrc.height / 2;
         // 이미지 데이터를 회전 후 재저장한다.
-        this.ctx.translate(this.angleX, this.angleY);
-        this.ctx.rotate(angle);
-        this.ctx.translate(-this.angleX, -this.angleY);
+        ctx.drawImage(this.prevImage, x, y);
 
-        let x = this.angleX - this.copy.width / 2;
-        let y = this.angleY - this.copy.height / 2;
-        this.ctx.drawImage(this.copy, x, y);
+        let source = ctx.getImageData(0, 0, copy.width, copy.height);
+        this.src = this.getSource({imageData: source});
 
-        let source = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-        this.src = this.getSource({imageData: source}); 
+        // 잘린 선을 회전 후 재저장한다.
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.drawImage(this.prevSlice, x, y);
+
+        this.sctx.clearRect(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
+        this.sctx.drawImage(copy, 0, 0);
     }
 
     // 회전 초기화 
@@ -88,9 +98,13 @@ class Part {
         let moveY = (this.canvas.height - this.src.height) / 2;
         this.x = parseInt(this.x + moveX);
         this.y = parseInt(this.y + moveY);
-        this.sctx.putImageData(this.copy_slice, 0, 0);
         this.canvas.width = this.src.width;
         this.canvas.height = this.src.height;
+        this.sliceCanvas = this.prevSlice;
+        this.sctx = this.prevSlice.getContext("2d");
+        this.angle = 0;
+
+        this.recalculate();
     }
     
     // 이미지 업데이트

@@ -50,7 +50,8 @@ class Spin extends Tools {
         if(!this.selected) return;
         let [x, y] = this.selected.src.getSize();
         this.selected.active = false;
-        // this.selected.recalculate();
+        this.selected.recalculate();
+        this.selected.angle = 0;
         this.selected = null;
         this.workspace.render();
     }
