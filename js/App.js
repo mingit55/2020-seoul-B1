@@ -287,7 +287,9 @@ class App {
             }
         }
         for(let i = 0; i < this.adviceNodes.length; i++){
-            this.adviceNodes[i].innerHTML = this.splittedAdvices[i].join(`<span class="highlight">${this.keyword}</span>`)
+            let keyword = this.keyword;
+            if(keyword == " ")keyword = "&nbsp;";
+            this.adviceNodes[i].innerHTML = this.splittedAdvices[i].join(`<span class="highlight">${keyword}</span>`)
             document.querySelectorAll("span.highlight")[this.keywordIndex].style.backgroundColor = "rgba(255, 255, 0, 0.5)";
         }
     }
