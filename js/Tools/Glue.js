@@ -48,7 +48,6 @@ class Glue extends Tools {
         let y = top;
         let width = right - left + 1;
         let height = bottom - top + 1;
-        console.log(x, y, width, height);
 
         let arr = [];
         arr.length = width * height * 4;
@@ -59,7 +58,17 @@ class Glue extends Tools {
         let fx, fy; // forEach 파츠의 좌표
         let gx, gy; // glueCanvas의 좌표
 
+        // 잘린 선을 저장해둘 캔버스
+        let sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = width;
+        sliceCanvas.height = height;
+        let sctx = sliceCanvas.getContext("2d");
+
         glueParts.reverse().forEach(part => {
+            // 잘린 선 붙여넣기
+            sctx.drawImage(part.sliceCanvas, part.x - x, part.y - y);
+
+            // 이미지 데이터 붙여넣기
             for(px = x; px < x + width; px++){
                 for(py = y; py < y + height; py++){
                     fx = px - part.x;
@@ -84,6 +93,9 @@ class Glue extends Tools {
         let newPart = new Part({imageData});
         newPart.x = x;
         newPart.y = y;
+        newPart.sliceCanvas = sliceCanvas;
+        newPart.sctx = sctx;
+        newPart.updateSliceData();
         
         glueParts.forEach(part => {
             let idx = this.parts.findIndex(item => item == part);

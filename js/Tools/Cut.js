@@ -194,11 +194,12 @@ class Cut extends Tools {
             });
             newPart.x = part.x;
             newPart.y = part.y;
-            
-            let [x, y] = newPart.src.getSize();
 
-            // 잘린 부분은 테두리 선으로 표시
-            newPart.sliceLine = [... part.sliceLine, ...sliceLine].filter(([x, y]) => newPart.src.isBorderPixel(x, y));
+            // 현재 자른 선과, 기존 파츠에 있던 선 중 이 파츠 테두리에 포함되는 것만 저장
+            newPart.sctx.drawImage(part.sliceCanvas, 0, 0);
+            sliceLine.forEach(([x, y]) => newPart.sctx.fillRect(x, y, 1, 1))
+            newPart.updateSliceData();
+
 
             // 잘린 선의 위치를 재계산
             newPart.recalculate();

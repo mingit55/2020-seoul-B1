@@ -71,7 +71,7 @@ class Source {
         let topColor = this.getColor(x, y - 1);
         let bottomColor = this.getColor(x, y + 1);
         
-        return leftColor || rightColor || topColor || bottomColor;
+        return (leftColor || rightColor || topColor || bottomColor) && !(leftColor && rightColor && topColor && bottomColor);
     }
 
     // 실제 사이즈 계산해서 가져오기

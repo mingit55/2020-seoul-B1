@@ -2,13 +2,16 @@ class Part {
     constructor(source){
         this.src = this.getSource(source);
 
+        // 이미지 데이터를 표시하는 캔버스
         this.canvas = document.createElement("canvas");
         this.canvas.width = this.src.width;
         this.canvas.height = this.src.height;
 
-        // 잘린 선
-        this.sliceLine = [];
-        this.prevLine = [];
+        // 잘린 선을 표시하는 캔버스
+        this.sliceCanvas = document.createElement("canvas");
+        this.sliceCanvas.width = this.src.width;
+        this.sliceCanvas.height = this.src.height;
+        this.sctx = this.sliceCanvas.getContext("2d");
 
         this.ctx = this.canvas.getContext("2d");
         this.ctx.fillStyle = "#000";
@@ -16,6 +19,7 @@ class Part {
         this.x = 0;
         this.y = 0;
         this.active = false;
+        this.angle = 0;
 
         
         this.update();
@@ -35,9 +39,12 @@ class Part {
             let moveY = (max_size - height) / 2;
             this.x = parseInt(this.x - moveX);
             this.y = parseInt(this.y - moveY);
-            this.sliceLine = this.sliceLine.map(([x, y]) => ([x + moveX, y + moveY]))
-            this.prevLine = JSON.parse(JSON.stringify(this.sliceLine));
             this.ctx.clearRect(0, 0, max_size, max_size);
+            // 잘린 선 캔버스도 같이 늘려줌
+            this.copy_slice = this.sctx.getImageData(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
+            this.sliceCanvas.width = this.sliceCanvas.height = max_size;
+            this.sctx.clearRect(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
+            this.sctx.putImageData(this.copy_slice, moveX, moveY);
         }
         
 
@@ -45,7 +52,7 @@ class Part {
         this.angleX = this.angleY = this.canvas.width / 2;
         
 
-        // 이미지를 담는 캔버스
+        // 이미지의 복사본
         this.copy = document.createElement("canvas");
         this.copy.width = this.src.width;
         this.copy.height = this.src.height;
@@ -71,14 +78,7 @@ class Part {
         this.ctx.drawImage(this.copy, x, y);
 
         let source = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-        this.src = this.getSource({imageData: source});
-
-        this.sliceLine = this.prevLine.map(([x, y]) => {
-            let r = Math.sqrt(Math.pow(x - this.angleX, 2), + Math.pow(this.angleY - y, 2));
-            let nowAngle = Math.asin((this.angleY - y) / r);
-            let moveAngle = nowAngle + angle;
-            return [ this.angleX + Math.cos(moveAngle) * r, this.angleY - Math.sin(moveAngle) * r];
-        });
+        this.src = this.getSource({imageData: source}); 
     }
 
     // 회전 초기화 
@@ -88,7 +88,7 @@ class Part {
         let moveY = (this.canvas.height - this.src.height) / 2;
         this.x = parseInt(this.x + moveX);
         this.y = parseInt(this.y + moveY);
-        this.sliceLine = this.prevLine.map(([x, y]) => ([x - moveX, y - moveY]));
+        this.sctx.putImageData(this.copy_slice, 0, 0);
         this.canvas.width = this.src.width;
         this.canvas.height = this.src.height;
     }
@@ -106,9 +106,7 @@ class Part {
         }
 
         //파츠의 잘린 선
-        this.sliceLine.forEach(([x, y]) => {
-            this.ctx.fillRect(x, y, 1, 1);
-        });
+        this.ctx.drawImage(this.sliceCanvas, 0, 0);
     }
 
     // 소스 가져오기
@@ -158,7 +156,15 @@ class Part {
 
         this.x += x;
         this.y += y;
-        this.sliceLine = this.sliceLine.map(([px, py]) => ([px - x, py - y]));
+
+        // 잘린 선 데이터 수정
+        let sliceData = this.sctx.getImageData(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
+        
+        this.sliceCanvas.width = w;
+        this.sliceCanvas.height = h;
+        
+        this.sctx.clearRect(0, 0, w, h);
+        this.sctx.putImageData(sliceData, -x, -y);
     }
 
     // 이 파츠가 해당 파츠 주변에 근접해 있는지 검사
@@ -179,5 +185,25 @@ class Part {
             }
         }
         return false;
+    }
+
+    // 해당 파츠에서 실제로 잘린 선만 sliceCanvas에 남기기
+    updateSliceData(){
+        let sliceData = this.sctx.getImageData(0, 0, this.src.width, this.src.height).data;
+        this.sctx.clearRect(0, 0, this.sliceCanvas.width, this.sliceCanvas.height);
+
+        let tempColor = [];
+        Array.from(sliceData)
+            .forEach((color, i) => {
+                tempColor.push(color);
+                if(tempColor.length === 4){
+                    let x = Math.floor(i / 4) % this.src.width;
+                    let y = Math.floor((i / 4) / this.src.width);
+                    if(tempColor[3] !== 0 && this.src.isBorderPixel(x, y)){
+                        this.sctx.fillRect(x, y, 1, 1);
+                    }
+                    tempColor = [];
+                }
+            });
     }
 }

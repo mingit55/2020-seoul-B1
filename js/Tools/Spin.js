@@ -49,9 +49,8 @@ class Spin extends Tools {
     accept = e => {
         if(!this.selected) return;
         let [x, y] = this.selected.src.getSize();
-        // this.selected.sliceLine = this.selected.sliceLine.map(([sx, sy]) => [sx + x, sy + y])
         this.selected.active = false;
-        this.selected.recalculate();
+        // this.selected.recalculate();
         this.selected = null;
         this.workspace.render();
     }
