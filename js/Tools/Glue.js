@@ -48,6 +48,7 @@ class Glue extends Tools {
         let y = top;
         let width = right - left + 1;
         let height = bottom - top + 1;
+        console.log(x, y, width, height);
 
         let arr = [];
         arr.length = width * height * 4;
@@ -56,17 +57,21 @@ class Glue extends Tools {
         let uint8 = Uint8ClampedArray.from(arr);
         let px, py; // 실제 픽셀 좌표
         let fx, fy; // forEach 파츠의 좌표
+        let gx, gy; // glueCanvas의 좌표
 
         glueParts.reverse().forEach(part => {
-            for(px = part.x; px < part.x + part.src.width; px++){
-                for(py = part.y; py < part.y + part.src.height; py++){
+            for(px = x; px < x + width; px++){
+                for(py = y; py < y + height; py++){
                     fx = px - part.x;
                     fy = py - part.y;
+
+                    gx = px - x;
+                    gy = py - y;
 
                     let color = part.src.getColor(fx, fy);
                     if(!color) continue;
 
-                    let idx = px * 4 + py * 4 * width;
+                    let idx = gx * 4 + gy * 4 * width;
                     uint8[idx] = color.r;
                     uint8[idx + 1] = color.g;
                     uint8[idx + 2] = color.b;

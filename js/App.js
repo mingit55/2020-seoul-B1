@@ -194,9 +194,10 @@ class App {
                 }
 
                 let buyListIndex = this.buyList.findIndex(b => b.id == paper.id);
+                let buyItem = this.buyList[buyListIndex];
                 if(--this.buyList[buyListIndex].buy <= 0){
                     this.buyList.splice(buyListIndex, 1);
-                    this.idb.delete("buyList", this.buyListIndex);
+                    this.idb.delete("buyList", buyItem.id);
                     e.currentTarget.remove();
                 }else{
                     this.idb.update("buyList", this.buyList[buyListIndex]);
